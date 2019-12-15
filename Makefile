@@ -6,3 +6,7 @@ db_stop:
 
 db_status:
 	docker-compose -f docker-compose.db.yml ps
+
+django_startapp:
+	python manage.py startapp ${name}
+	mv ${name} apps
