@@ -23,6 +23,7 @@ attrs==19.3.0
 coverage==4.5.4
 more-itertools==7.2.0
 packaging==19.2
+parameterized==0.7.1
 pluggy==0.13.1
 py==1.8.0
 pyparsing==2.4.5
