@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.common',
     'apps.counterparties',
+    'apps.transactions',
     'apps.users',
 ]
 

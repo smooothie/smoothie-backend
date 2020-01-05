@@ -5,6 +5,7 @@ from djmoney.models.fields import MoneyField
 from djmoney.models.validators import MinMoneyValidator
 
 from apps.common.models import PolyModel
+from apps.counterparties.models import Counterparty
 from apps.users.models import User
 
 
@@ -56,3 +57,8 @@ class DebitAccount(Account):
 
 class CashAccount(DebitAccount):
     pass
+
+
+class CounterpartyAccount(Account):
+    counterparty = models.ForeignKey(Counterparty, on_delete=models.PROTECT,
+                                     related_name='accounts')
