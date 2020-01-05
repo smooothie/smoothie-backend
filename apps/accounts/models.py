@@ -1,17 +1,14 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.utils import DEFAULT_DB_ALIAS
 
 from djmoney.models.fields import MoneyField
 from djmoney.models.validators import MinMoneyValidator
-from polymorphic.models import PolymorphicModel
 
+from apps.common.models import PolyModel
 from apps.users.models import User
 
 
-class Account(PolymorphicModel):
-    # denormalized field for easier type filters
-    account_type = models.CharField(max_length=100, blank=True, default='', editable=False)
+class Account(PolyModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='accounts')
     name = models.CharField(max_length=128)
     balance = MoneyField(max_digits=14, decimal_places=2, default=0, default_currency='UAH')
@@ -32,11 +29,6 @@ class Account(PolymorphicModel):
                 name='positive_balance_debit'
             )
         ]
-
-    def pre_save_polymorphic(self, using=DEFAULT_DB_ALIAS):
-        if not self.polymorphic_ctype_id:
-            super().pre_save_polymorphic(using)
-            self.account_type = self.polymorphic_ctype.model
 
     def __str__(self):
         return f'{self.name}'

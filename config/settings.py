@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     # local
     'apps.accounts',
     'apps.common',
+    'apps.counterparties',
     'apps.users',
 ]
 
