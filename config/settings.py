@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 
     # third party
     'djmoney',
+    'graphene_django',
     'polymorphic',
 
     # local
@@ -170,4 +171,9 @@ LOGGING = {
             'level': 'INFO',
         },
     },
+}
+
+
+GRAPHENE = {
+    'SCHEMA': 'apps.schema.schema',
 }
