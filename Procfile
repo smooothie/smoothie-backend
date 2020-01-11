@@ -1,2 +1,2 @@
 release: python manage.py migrate --noinput
-web: gunicorn config.wsgi --keep-alive 10
+web: daphne config.asgi:application
