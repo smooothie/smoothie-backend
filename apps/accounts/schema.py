@@ -24,7 +24,8 @@ class AccountNode(PolyDjangoObjectTypeMixin, DjangoObjectType):
         user = info.context.user
         if not user.is_authenticated:
             return queryset.none()
-        return queryset.filter(user=user)
+        return queryset.filter(user=user).exclude(
+            account_type__in=['incomebalance', 'spendingbalance'])
 
 
 class Query:
