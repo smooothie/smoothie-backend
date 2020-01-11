@@ -183,3 +183,9 @@ GRAPHENE = {
     'SCHEMA_INDENT': 2,
     'CAMELCASE_ERRORS': True,
 }
+
+HEROKU = dotenv.get('HEROKU', default=False)
+
+if HEROKU:
+    import django_heroku
+    django_heroku.settings(locals())
