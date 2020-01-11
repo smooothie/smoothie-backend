@@ -10,3 +10,4 @@ py-moneyed==0.8.0
 python-env==1.0.0
 pytz==2019.3
 sqlparse==0.3.0
+whitenoise==5.0.1
