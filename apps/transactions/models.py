@@ -1,4 +1,3 @@
-from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -7,11 +6,11 @@ from djmoney.models.fields import MoneyField
 
 from apps.accounts.models import Account
 from apps.common.models import PolyModel
+from apps.common.validators import MinMoneyValidator
 from apps.counterparties.models import Counterparty
 
 
 class TransactionCategory(models.Model):
-    code = models.PositiveSmallIntegerField(null=True)
     name = models.CharField(max_length=200)
 
     class Meta:
@@ -23,8 +22,7 @@ class TransactionCategory(models.Model):
 
 class Transaction(PolyModel):
     date = models.DateTimeField(default=timezone.now)
-    amount = MoneyField(max_digits=14, decimal_places=2, default_currency='UAH',
-                        validators=[MinValueValidator(0.01)])
+    amount = MoneyField(max_digits=14, decimal_places=2, validators=[MinMoneyValidator(0.01)])
     account_from = models.ForeignKey(Account, on_delete=models.PROTECT,
                                      related_name='transactions_from')
     account_to = models.ForeignKey(Account, on_delete=models.PROTECT,

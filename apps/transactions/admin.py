@@ -8,7 +8,7 @@ from apps.transactions.models import Income, Purchase, Transaction, TransactionC
 
 @admin.register(TransactionCategory)
 class TransactionCategoryAdmin(admin.ModelAdmin):
-    list_display = ['code', 'name']
+    list_display = ['name']
 
 
 @admin.register(Transaction)

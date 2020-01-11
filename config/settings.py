@@ -152,6 +152,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
+DEFAULT_CURRENCY = 'UAH'
+
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
