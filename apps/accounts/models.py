@@ -32,7 +32,7 @@ class Account(PolyModel):
         ]
 
     def __str__(self):
-        return f'{self.name}'
+        return f'{self.name}, {self.user.username}'
 
 
 class SpendingBalance(Account):

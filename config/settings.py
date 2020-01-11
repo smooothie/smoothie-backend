@@ -176,4 +176,7 @@ LOGGING = {
 
 GRAPHENE = {
     'SCHEMA': 'apps.schema.schema',
+    'SCHEMA_OUTPUT': 'apps/schema.json',
+    'SCHEMA_INDENT': 2,
+    'CAMELCASE_ERRORS': True,
 }
