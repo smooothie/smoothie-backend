@@ -9,7 +9,8 @@ from apps.common.graphene.polymorphic import (PolyDjangoFilterConnectionField,
 class AccountNode(PolyDjangoObjectTypeMixin, DjangoObjectType):
     class Meta:
         model = Account
-        fields = ['name', 'account_type', 'balance', 'balance_currency']
+        fields = ['name', 'account_type', 'balance', 'balance_currency', 'transactions_to',
+                  'transactions_from']
         filter_fields = {
             'account_type': ['exact'],
         }
