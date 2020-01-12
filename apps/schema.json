@@ -3665,7 +3665,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "username",
+              "name": "email",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
