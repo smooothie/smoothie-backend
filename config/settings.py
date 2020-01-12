@@ -22,7 +22,7 @@ DEBUG = not PRODUCTION
 ALLOWED_HOSTS = [
     'smoooth.ieee',
     'smooothie.xyz',
-    'smooothie.herokuapp.com',
+    'smooothie-web.herokuapp.com',
     'smooothie-backend.herokuapp.com'
 ] if PRODUCTION else ['*']
 
@@ -188,8 +188,8 @@ if PRODUCTION:
 else:
     CORS_ORIGIN_REGEX_WHITELIST = [
         r'^(http://)?(localhost|127\.0\.0\.1)(:\d+)?$',
-        r'^(https?://)?(\w+\.)?smooothie-test(-pr-\d+)?\.herokuapp\.com$',
-        r'^(https?://)?(\w+\.)?smooothie(-staging)?\.herokuapp\.com$',
+        r'^(https?://)?(\w+\.)?smooothie-web-test(-pr-\d+)?\.herokuapp\.com$',
+        r'^(https?://)?(\w+\.)?smooothie-web(-staging)?\.herokuapp\.com$',
     ]
 
 CORS_URLS_REGEX = r'^/graphql$'
