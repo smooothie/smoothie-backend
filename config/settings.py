@@ -140,6 +140,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 
 DEFAULT_CURRENCY = 'UAH'
@@ -172,7 +175,7 @@ if not HEROKU:
 
 GRAPHENE = {
     'SCHEMA': 'apps.schema.schema',
-    'SCHEMA_OUTPUT': 'apps/schema.json',
+    'SCHEMA_OUTPUT': 'static/schema.json',
     'SCHEMA_INDENT': 2,
     'CAMELCASE_ERRORS': True,
     'MIDDLEWARE': [
