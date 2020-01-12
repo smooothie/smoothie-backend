@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # third party
+    'corsheaders',
     'djmoney',
     'graphene_django',
     'polymorphic',
@@ -66,6 +67,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -194,6 +196,22 @@ GRAPHENE = {
         'graphql_jwt.middleware.JSONWebTokenMiddleware',
     ],
 }
+
+API_URL = dotenv.get('API_URL', default='http://localhost:8000')
+UI_URL = dotenv.get('UI_URL', default='http://localhost:3000')
+
+if PRODUCTION:
+    CORS_ORIGIN_WHITELIST = [UI_URL]
+else:
+    CORS_ORIGIN_REGEX_WHITELIST = [
+        r'^(http://)?(localhost|127\.0\.0\.1)(:\d+)?$',
+        r'^(https?://)?(\w+\.)?smooothie-test(-pr-\d+)?\.herokuapp\.com$',
+        r'^(https?://)?(\w+\.)?smooothie(-staging)?\.herokuapp\.com$',
+    ]
+
+CORS_URLS_REGEX = r'^/graphql$'
+
+CSRF_TRUSTED_ORIGINS = [UI_URL]
 
 HEROKU = dotenv.get('HEROKU', default=False)
 
