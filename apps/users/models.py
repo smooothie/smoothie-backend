@@ -4,6 +4,9 @@ from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
     email = CIEmailField(
         verbose_name=_('Email'),
         max_length=254,
