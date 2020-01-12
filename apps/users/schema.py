@@ -1,5 +1,6 @@
 from graphene import Field, relay
 from graphene_django import DjangoObjectType
+from graphql_jwt.decorators import login_required
 
 from apps.users.models import User
 
@@ -14,8 +15,6 @@ class UserNode(DjangoObjectType):
 class Query:
     user = Field(UserNode)
 
+    @login_required
     def resolve_user(self, info):
-        user = info.context.user
-        if not user.is_authenticated:
-            return None
-        return user
+        return info.context.user

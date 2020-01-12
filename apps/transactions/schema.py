@@ -2,9 +2,9 @@ from graphene import relay
 from graphene_django import DjangoObjectType
 
 from apps.accounts.models import Account
-from apps.transactions.models import Transaction, TransactionCategory
 from apps.common.graphene.polymorphic import (PolyDjangoFilterConnectionField,
                                               PolyDjangoObjectTypeMixin)
+from apps.transactions.models import Transaction, TransactionCategory
 
 
 class TransactionCategoryNode(DjangoObjectType):

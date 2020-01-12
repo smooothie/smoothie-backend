@@ -2,9 +2,9 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path
 
-from apps.common.graphene.views import PrivateGraphQLView
+from graphene_django.views import GraphQLView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('graphql', PrivateGraphQLView.as_view(graphiql=settings.DEBUG)),
+    path('graphql', GraphQLView.as_view(graphiql=settings.DEBUG)),
 ]
