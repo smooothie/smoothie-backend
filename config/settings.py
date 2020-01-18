@@ -197,7 +197,7 @@ else:
 
 CORS_URLS_REGEX = r'^/graphql$'
 
-CSRF_TRUSTED_ORIGINS = [UI_URL]
+CSRF_TRUSTED_ORIGINS = [UI_URL.strip('http://').strip('https://')]
 
 if HEROKU:
     import django_heroku
