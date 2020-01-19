@@ -4,6 +4,7 @@ from graphene_django import DjangoObjectType
 from apps.accounts.models import Account
 from apps.common.graphene.polymorphic import (PolyDjangoFilterConnectionField,
                                               PolyDjangoObjectTypeMixin)
+from .filters import AccountFilter
 
 
 class AccountNode(PolyDjangoObjectTypeMixin, DjangoObjectType):
@@ -11,9 +12,7 @@ class AccountNode(PolyDjangoObjectTypeMixin, DjangoObjectType):
         model = Account
         fields = ['name', 'account_type', 'balance', 'balance_currency', 'transactions_to',
                   'transactions_from']
-        filter_fields = {
-            'account_type': ['exact'],
-        }
+        filter_fields = ['account_type']
         interfaces = (relay.Node,)
 
     def resolve_balance(self, info):
@@ -25,10 +24,9 @@ class AccountNode(PolyDjangoObjectTypeMixin, DjangoObjectType):
         user = info.context.user
         if not user.is_authenticated:
             return queryset.none()
-        return queryset.filter(user=user).exclude(
-            account_type__in=['incomebalance', 'spendingbalance'])
+        return queryset.filter(user=user)
 
 
 class Query:
     account = relay.Node.Field(AccountNode)
-    accounts = PolyDjangoFilterConnectionField(AccountNode)
+    accounts = PolyDjangoFilterConnectionField(AccountNode, filterset_class=AccountFilter)
