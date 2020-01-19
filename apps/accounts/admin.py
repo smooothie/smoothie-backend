@@ -10,7 +10,7 @@ from apps.accounts.models import (Account, CashAccount, CounterpartyAccount, Inc
 @admin.register(Account)
 class AccountAdmin(PolymorphicParentModelAdmin):
     base_model = Account
-    child_models = [CashAccount, IncomeBalance, SpendingBalance]
+    child_models = [CashAccount, CounterpartyAccount, IncomeBalance, SpendingBalance]
     list_filter = [PolymorphicChildModelFilter]
 
 
