@@ -18,7 +18,7 @@ class Account(PolyModel):
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'name'],
-                name='unique_user_name'
+                name='account_unique_user_name'
             ),
             models.UniqueConstraint(
                 fields=['user', 'account_type'],

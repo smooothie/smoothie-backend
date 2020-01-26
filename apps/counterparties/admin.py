@@ -11,6 +11,7 @@ class CounterpartyAdmin(PolymorphicParentModelAdmin):
     base_model = Counterparty
     child_models = [Person, Bank, Shop]
     list_filter = [PolymorphicChildModelFilter]
+    list_display = ['name', 'user']
 
 
 @admin.register(Person)

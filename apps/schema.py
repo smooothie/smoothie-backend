@@ -1,5 +1,6 @@
 import graphene
 
+from apps.accounts.schema import AccountMutation
 from apps.accounts.schema import Query as AccountsQuery
 from apps.common.schema import TokenMutation
 from apps.transactions.schema import Query as TransactionsQuery
@@ -17,6 +18,7 @@ class Query(
 
 class Mutation(
     TokenMutation,
+    AccountMutation,
     graphene.ObjectType
 ):
     pass
