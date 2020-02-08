@@ -152,7 +152,7 @@
                   "name": "accountFrom",
                   "type": {
                     "kind": "SCALAR",
-                    "name": "ID",
+                    "name": "String",
                     "ofType": null
                   }
                 },
