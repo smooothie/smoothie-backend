@@ -1,3 +1,6 @@
+from django.db.models import Q
+
+# import graphene
 from graphene import relay
 from graphene_django import DjangoObjectType
 
@@ -5,6 +8,7 @@ from apps.accounts.models import Account
 from apps.common.graphene.polymorphic import (PolyDjangoFilterConnectionField,
                                               PolyDjangoObjectTypeMixin)
 from apps.transactions.models import Transaction, TransactionCategory
+from .filters import TransactionFilter
 
 
 class TransactionCategoryNode(DjangoObjectType):
@@ -13,15 +17,12 @@ class TransactionCategoryNode(DjangoObjectType):
         fields = ['name']
 
 
-class TranasctionNode(PolyDjangoObjectTypeMixin, DjangoObjectType):
+class TransactionNode(PolyDjangoObjectTypeMixin, DjangoObjectType):
     class Meta:
         model = Transaction
         fields = ['date', 'amount', 'amount_currency', 'account_from', 'account_to', 'description',
                   'category', 'is_completed']
-        filter_fields = {
-            'category': ['exact'],
-            'is_completed': ['exact'],
-        }
+        filter_fields = ['category', 'is_completed', 'account_from']
         interfaces = (relay.Node,)
 
     def resolve_amount(self, info):
@@ -39,9 +40,19 @@ class TranasctionNode(PolyDjangoObjectTypeMixin, DjangoObjectType):
         user = info.context.user
         if not user.is_authenticated:
             return queryset.none()
-        return queryset.filter(account_from__user=user)
+        return queryset.filter(
+            Q(account_from__user=user) | Q(account_to__user=user)
+        ).order_by('-date')
+
+
+# class TransactionMutation(relay.ClientIDMutation):
+#     class Input:
+#         transaction_type = graphene.String(required=True)
+#         # TODO: allow providing currency
+#         amount = graphene.Float()
 
 
 class Query:
-    transaction = relay.Node.Field(TranasctionNode)
-    transactions = PolyDjangoFilterConnectionField(TranasctionNode)
+    transaction = relay.Node.Field(TransactionNode)
+    transactions = PolyDjangoFilterConnectionField(TransactionNode,
+                                                   filterset_class=TransactionFilter)
