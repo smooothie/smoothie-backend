@@ -69,18 +69,10 @@ class CreateUpdateAccountMutation(relay.ClientIDMutation):
             })
 
         counterparty_name = input.pop('counterparty_name', None)
-        if counterparty_name:
-            if account_type != 'counterpartyaccount':
-                raise ValidationError({
-                    'counterpartyName': 'Only counterparty accounts can have counterparty',
-                })
+        if account_type == 'counterpartyaccount':
+            counterparty_name = counterparty_name or input['name']
             counterparty, _ = Counterparty.objects.get_or_create(name=counterparty_name, user=user)
             input['counterparty'] = counterparty
-        else:
-            if account_type == 'counterpartyaccount':
-                raise ValidationError({
-                    'counterpartyName': 'Counterparty accounts must have counterparty',
-                })
 
         id_ = input.pop('id', None)
 
