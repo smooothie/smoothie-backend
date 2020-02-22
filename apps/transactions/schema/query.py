@@ -1,6 +1,5 @@
 from django.db.models import Q
 
-import graphene
 from graphene import relay
 from graphene_django import DjangoObjectType
 
@@ -8,7 +7,7 @@ from apps.accounts.models import Account
 from apps.common.graphene.polymorphic import (PolyDjangoFilterConnectionField,
                                               PolyDjangoObjectTypeMixin)
 from apps.transactions.models import Transaction, TransactionCategory
-from .filters import TransactionFilter
+from ..filters import TransactionFilter
 
 
 class TransactionCategoryNode(DjangoObjectType):
@@ -43,13 +42,6 @@ class TransactionNode(PolyDjangoObjectTypeMixin, DjangoObjectType):
         return queryset.filter(
             Q(account_from__user=user) | Q(account_to__user=user)
         ).order_by('-date')
-
-#
-# class TransactionMutation(relay.ClientIDMutation):
-#     class Input:
-#         transaction_type = graphene.String(required=True)
-#         # TODO: allow providing currency
-#         amount = graphene.Float()
 
 
 class Query:
