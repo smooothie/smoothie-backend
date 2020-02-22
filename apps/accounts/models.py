@@ -21,12 +21,12 @@ class Account(PolyModel):
                 name='account_unique_user_name'
             ),
             models.UniqueConstraint(
-                fields=['user', 'account_type'],
-                name='unique_user_account_type',
-                condition=models.Q(account_type__in=['spendingbalance', 'incomebalance'])
+                fields=['user', 'item_type'],
+                name='unique_user_item_type',
+                condition=models.Q(item_type__in=['spendingbalance', 'incomebalance'])
             ),
             models.CheckConstraint(
-                check=models.Q(balance__gte=0) | ~models.Q(account_type='cashaccount'),
+                check=models.Q(balance__gte=0) | ~models.Q(item_type='cashaccount'),
                 name='positive_balance_debit'
             )
         ]

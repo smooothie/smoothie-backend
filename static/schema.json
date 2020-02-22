@@ -259,7 +259,7 @@
                 {
                   "defaultValue": null,
                   "description": null,
-                  "name": "accountType",
+                  "name": "itemType",
                   "type": {
                     "kind": "SCALAR",
                     "name": "String",
@@ -381,7 +381,7 @@
                 {
                   "defaultValue": null,
                   "description": null,
-                  "name": "accountType",
+                  "name": "itemType",
                   "type": {
                     "kind": "SCALAR",
                     "name": "String",
@@ -667,7 +667,7 @@
               "deprecationReason": null,
               "description": "",
               "isDeprecated": false,
-              "name": "accountType",
+              "name": "itemType",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -3739,7 +3739,7 @@
             {
               "defaultValue": null,
               "description": null,
-              "name": "accountType",
+              "name": "itemType",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,

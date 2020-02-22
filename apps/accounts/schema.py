@@ -21,9 +21,9 @@ ACCOUNT_CLASSES = {
 class AccountNode(PolyDjangoObjectTypeMixin, DjangoObjectType):
     class Meta:
         model = Account
-        fields = ['name', 'account_type', 'balance', 'balance_currency', 'transactions_to',
+        fields = ['name', 'item_type', 'balance', 'balance_currency', 'transactions_to',
                   'transactions_from']
-        filter_fields = ['account_type']
+        filter_fields = ['item_type']
         interfaces = (relay.Node,)
 
     def resolve_balance(self, info):
@@ -45,7 +45,7 @@ class Query:
 
 class CreateUpdateAccountMutation(relay.ClientIDMutation):
     class Input:
-        account_type = graphene.String(required=True)
+        item_type = graphene.String(required=True)
         name = graphene.String(required=True)
         # TODO: allow providing currency
         balance = graphene.Float()
@@ -60,16 +60,16 @@ class CreateUpdateAccountMutation(relay.ClientIDMutation):
         user = info.context.user
         input['user'] = user
 
-        account_type = input.pop('account_type')
-        account_cls = ACCOUNT_CLASSES.get(account_type)
+        item_type = input.pop('item_type')
+        account_cls = ACCOUNT_CLASSES.get(item_type)
         if account_cls is None:
-            account_type_options = ', '.join(ACCOUNT_CLASSES.keys())
+            item_type_options = ', '.join(ACCOUNT_CLASSES.keys())
             raise ValidationError({
-                'accountType': f"accountType must be one of {account_type_options}"
+                'itemType': f"itemType must be one of {item_type_options}"
             })
 
         counterparty_name = input.pop('counterparty_name', None)
-        if account_type == 'counterpartyaccount':
+        if item_type == 'counterpartyaccount':
             counterparty_name = counterparty_name or input['name']
             counterparty, _ = Counterparty.objects.get_or_create(name=counterparty_name, user=user)
             input['counterparty'] = counterparty

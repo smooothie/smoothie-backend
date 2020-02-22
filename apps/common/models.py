@@ -6,7 +6,7 @@ from polymorphic.models import PolymorphicModel
 
 class PolyModel(PolymorphicModel):
     # denormalized field for easier type filters
-    account_type = models.CharField(max_length=100, blank=True, default='', editable=False)
+    item_type = models.CharField(max_length=100, blank=True, default='', editable=False)
 
     class Meta:
         abstract = True
@@ -14,4 +14,4 @@ class PolyModel(PolymorphicModel):
     def pre_save_polymorphic(self, using=DEFAULT_DB_ALIAS):
         if not self.polymorphic_ctype_id:
             super().pre_save_polymorphic(using)
-            self.account_type = self.polymorphic_ctype.model
+            self.item_type = self.polymorphic_ctype.model
