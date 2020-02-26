@@ -48,7 +48,7 @@ class CreateTransactionMutation(relay.ClientIDMutation):
         if item_type == 'purchase':
             account_to = user.spending_balance
         else:
-            if account_to_id is None:
+            if not account_to_id:
                 raise ValidationError({
                     'account_to_id': 'This field is required',
                 })
@@ -59,7 +59,7 @@ class CreateTransactionMutation(relay.ClientIDMutation):
         if item_type == 'income':
             account_from = user.income_balance
         else:
-            if account_from_id is None:
+            if not account_from_id:
                 raise ValidationError({
                     'account_from_id': 'This field is required',
                 })
