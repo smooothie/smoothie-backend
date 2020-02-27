@@ -5,8 +5,11 @@ django-graphql-jwt==0.3.0
 django-filter==2.2.0
 django-money==1.0
 django-polymorphic==2.1.2
+djangorestframework==3.11.0
+djangorestframework-camel-case==1.1.2
 graphene==2.1.8
 graphene-django==2.8.2
+Markdown==3.2.1
 psycopg2==2.8.4
 py-moneyed==0.8.0
 python-env==1.0.0
