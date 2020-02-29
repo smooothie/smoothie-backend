@@ -3,16 +3,24 @@ from django.db import models
 
 from djmoney.models.fields import MoneyField
 from djmoney.models.validators import MinMoneyValidator
+from polymorphic.managers import PolymorphicQuerySet
 
 from apps.common.models import PolyModel
 from apps.counterparties.models import Counterparty
 from apps.users.models import User
 
 
+class AccountQuerySet(PolymorphicQuerySet):
+    def visible(self):
+        return self.exclude(item_type__in=['incomebalance', 'spendingbalance'])
+
+
 class Account(PolyModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='accounts')
     name = models.CharField(max_length=128)
     balance = MoneyField(max_digits=14, decimal_places=2, default=0, default_currency='UAH')
+
+    objects = AccountQuerySet.as_manager()
 
     class Meta:
         constraints = [

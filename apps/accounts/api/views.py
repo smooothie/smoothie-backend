@@ -5,7 +5,7 @@ from .serializers import AccountSerializer
 
 
 class AccountViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Account.objects.exclude(item_type__in=['incomebalance', 'spendingbalance'])
+    queryset = Account.objects.visible()
     serializer_class = AccountSerializer
 
     def get_queryset(self):

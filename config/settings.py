@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 import dj_database_url
 import dotenv
@@ -126,7 +127,7 @@ AUTHENTICATION_BACKENDS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'uk-ua'
 
 TIME_ZONE = 'Europe/Kiev'
 
@@ -148,6 +149,11 @@ STATICFILES_DIRS = [
 
 
 DEFAULT_CURRENCY = 'UAH'
+CURRENCY_CHOICES = [
+    ('UAH', 'UAH'),
+    ('USD', 'USD'),
+    ('EUR', 'EUR'),
+]
 
 if not HEROKU:
     LOGGING = {
@@ -186,6 +192,11 @@ GRAPHENE = {
 }
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated'
     ],
@@ -198,11 +209,20 @@ REST_FRAMEWORK = {
         'djangorestframework_camel_case.parser.CamelCaseMultiPartParser',
         'djangorestframework_camel_case.parser.CamelCaseJSONParser',
     ],
-    'DEFAULT_FILTER_BACKENDS': (
+    'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.OrderingFilter',
         'rest_framework.filters.SearchFilter'
-    ),
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'apps.common.api.pagination.PaginationWithCountHeader',
+    'PAGE_SIZE': 20,
+}
+
+SIMPLE_JWT = {
+    # for simplicity, adjust later
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=3),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
+    'AUTH_HEADER_TYPES': ('JWT',),
 }
 
 API_URL = dotenv.get('API_URL', default='http://localhost:8000')
@@ -217,7 +237,7 @@ else:
         r'^(https?://)?(\w+\.)?smooothie-web(-staging)?\.herokuapp\.com$',
     ]
 
-CORS_URLS_REGEX = r'^/graphql$'
+CORS_URLS_REGEX = r'^/(graphql|api/.*)$'
 
 CSRF_TRUSTED_ORIGINS = [UI_URL.strip('http://').strip('https://')]
 

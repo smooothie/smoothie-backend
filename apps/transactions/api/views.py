@@ -2,18 +2,19 @@ from django.db.models import Q
 
 from rest_framework import viewsets
 
+from apps.transactions.filters import TransactionFilter
 from apps.transactions.models import Transaction
 from .serializers import TransactionSerializer
 
 
-class TransactionViewSet(viewsets.ReadOnlyModelViewSet):
+class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
     ordering_fields = {
         'date': 'date',
     }
     default_ordering = ('-date',)
-    filterset_fields = ['category', 'is_completed']
+    filterset_class = TransactionFilter
 
     def get_queryset(self):
         user = self.request.user
