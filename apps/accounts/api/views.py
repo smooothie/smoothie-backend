@@ -4,7 +4,7 @@ from apps.accounts.models import Account
 from .serializers import AccountSerializer
 
 
-class AccountViewSet(viewsets.ReadOnlyModelViewSet):
+class AccountViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.visible()
     serializer_class = AccountSerializer
 
