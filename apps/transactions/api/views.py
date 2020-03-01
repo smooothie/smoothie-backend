@@ -13,7 +13,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
     ordering_fields = {
         'date': 'date',
     }
-    default_ordering = ('-date',)
+    ordering = ('-date',)
     filterset_class = TransactionFilter
 
     def get_queryset(self):
