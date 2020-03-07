@@ -13,6 +13,12 @@ ACCOUNT_CLASSES = {
 }
 
 
+class SimpleAccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ['id', 'name']
+
+
 class AccountSerializer(serializers.ModelSerializer):
     item_type = serializers.ChoiceField(choices=[
         ('cashaccount', 'cashaccount'),
