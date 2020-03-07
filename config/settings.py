@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     # third party
     'corsheaders',
     'djmoney',
-    'graphene_django',
     'rest_framework',
     'polymorphic',
     'django_filters',
@@ -119,7 +118,6 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'users.User'
 
 AUTHENTICATION_BACKENDS = [
-    'graphql_jwt.backends.JSONWebTokenBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -180,17 +178,6 @@ if not HEROKU:
         },
     }
 
-
-GRAPHENE = {
-    'SCHEMA': 'apps.schema.schema',
-    'SCHEMA_OUTPUT': 'static/schema.json',
-    'SCHEMA_INDENT': 2,
-    'CAMELCASE_ERRORS': True,
-    'MIDDLEWARE': [
-        'graphql_jwt.middleware.JSONWebTokenMiddleware',
-    ],
-}
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -237,7 +224,7 @@ else:
         r'^(https?://)?(\w+\.)?smooothie-web(-staging)?\.herokuapp\.com$',
     ]
 
-CORS_URLS_REGEX = r'^/(graphql|api/.*)$'
+CORS_URLS_REGEX = r'^/api/.*$'
 
 CSRF_TRUSTED_ORIGINS = [UI_URL.strip('http://').strip('https://')]
 
