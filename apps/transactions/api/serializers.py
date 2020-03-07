@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.transaction import atomic
 
 from djmoney.money import Money
@@ -81,6 +82,17 @@ class TransactionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 'account_from_id': "Це поле обв'язкове",
             })
+
+        current_balance = attrs['account_from'].balance
+        try:
+            attrs['account_from'].balance = current_balance - attrs['amount']
+            attrs['account_from'].clean()
+        except DjangoValidationError:
+            raise serializers.ValidationError({
+                'amount': "Переконайтеся, що на рахунку достатньо коштів",
+            })
+        finally:
+            attrs['account_from'].balance = current_balance
 
         counterparty_name = attrs.pop('counterparty_name', None)
         if attrs['item_type'] in ['purchase', 'income']:
