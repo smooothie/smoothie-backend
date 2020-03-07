@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from djmoney.models.fields import MoneyField
+from polymorphic.managers import PolymorphicQuerySet
 
 from apps.accounts.models import Account
 from apps.common.models import PolyModel
@@ -20,6 +21,14 @@ class TransactionCategory(models.Model):
         return self.name
 
 
+class TransactionQuerySet(PolymorphicQuerySet):
+    def for_user(self, user_id):
+        return self.filter(
+            models.Q(account_from__user_id=user_id) |
+            models.Q(account_to__user_id=user_id)
+        )
+
+
 class Transaction(PolyModel):
     date = models.DateTimeField(default=timezone.now)
     amount = MoneyField(max_digits=14, decimal_places=2, validators=[MinMoneyValidator(0.01)])
@@ -31,6 +40,8 @@ class Transaction(PolyModel):
     category = models.ForeignKey(TransactionCategory, on_delete=models.PROTECT,
                                  related_name='transactions')
     is_completed = models.BooleanField(default=True)
+
+    objects = TransactionQuerySet.as_manager()
 
     def __str__(self):
         return f'{self.date}, {self.amount}'
