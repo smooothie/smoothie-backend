@@ -17,9 +17,11 @@ TRANSACTION_CLASSES = {
 
 
 class SimpleAccountSerializer(serializers.ModelSerializer):
+    balance = serializers.FloatField(source='balance.amount', read_only=True)
+
     class Meta:
         model = Account
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'balance']
         read_only_fields = fields
 
 
