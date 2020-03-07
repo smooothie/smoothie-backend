@@ -8,11 +8,13 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 from apps.accounts.api.views import AccountViewSet
+from apps.counterparties.api.views import CounterpartyAutocompleteViewSet
 from apps.transactions.api.views import TransactionViewSet
 
 router = DefaultRouter()
 router.register(r'accounts', AccountViewSet)
 router.register(r'transactions', TransactionViewSet)
+router.register(r'counterparties/autocomplete', CounterpartyAutocompleteViewSet)
 
 
 graphql_view = GraphQLView.as_view(graphiql=settings.DEBUG)
