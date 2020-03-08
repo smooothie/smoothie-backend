@@ -1,4 +1,5 @@
-from django.db import models
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError, models
 from django.db.transaction import atomic
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -54,10 +55,17 @@ class Transaction(PolyModel):
         return f'{self.date}, {self.amount}'
 
     def update_accounts_balances(self):
-        self.account_from.balance -= self.amount
-        self.account_to.balance += self.amount
+        if (self.amount_currency != self.account_from.balance_currency or
+                self.amount_currency != self.account_to.balance_currency):
+            raise IntegrityError('Currency mismatch')
+
+        # use database increment / decrement instead of calculating from current value
+        self.account_from.balance = models.F('balance') - self.amount
+        self.account_to.balance = models.F('balance') + self.amount
         self.account_from.save(update_fields=['balance'])
         self.account_to.save(update_fields=['balance'])
+        self.account_from.refresh_from_db()
+        self.account_to.refresh_from_db()
 
     @atomic
     def save(self, *args, **kwargs):
@@ -67,6 +75,11 @@ class Transaction(PolyModel):
         if is_new and self.is_completed:
             self.update_accounts_balances()
         return res
+
+    def clean(self):
+        if (self.amount_currency != self.account_from.balance_currency or
+                self.amount_currency != self.account_to.balance_currency):
+            raise ValidationError('Currency mismatch')
 
 
 class Purchase(Transaction):

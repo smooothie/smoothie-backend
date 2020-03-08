@@ -1,7 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.postgres.fields import CIEmailField
-from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
+
+from djmoney.money import Money
 
 
 class User(AbstractUser):
@@ -17,18 +18,18 @@ class User(AbstractUser):
         }
     )
 
-    @cached_property
-    def income_balance(self):
+    def get_income_balance(self, currency):
         from apps.accounts.models import IncomeBalance
         return IncomeBalance.objects.get_or_create(
             user=self,
-            defaults={'name': 'Income Balance'}
+            balance_currency=currency,
+            defaults={'name': f'Рахунок доходів {currency}', 'balance': Money(0, currency)}
         )[0]
 
-    @cached_property
-    def spending_balance(self):
+    def get_spending_balance(self, currency):
         from apps.accounts.models import SpendingBalance
         return SpendingBalance.objects.get_or_create(
             user=self,
-            defaults={'name': 'Spending Balance'}
+            balance_currency=currency,
+            defaults={'name': f'Рахунок витрат {currency}', 'balance': Money(0, currency)}
         )[0]

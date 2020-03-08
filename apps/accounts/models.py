@@ -31,7 +31,7 @@ class Account(PolyModel):
                 name='account_unique_user_name'
             ),
             models.UniqueConstraint(
-                fields=['user', 'item_type'],
+                fields=['user', 'item_type', 'balance_currency'],
                 name='unique_user_item_type',
                 condition=models.Q(item_type__in=['spendingbalance', 'incomebalance'])
             ),

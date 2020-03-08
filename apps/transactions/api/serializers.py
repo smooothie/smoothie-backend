@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.transaction import atomic
 
@@ -39,9 +38,7 @@ class TransactionSerializer(serializers.ModelSerializer):
         ('transfer', 'transfer'),
     ])
     amount = serializers.FloatField(source='amount.amount')
-    amount_currency = serializers.ChoiceField(choices=settings.CURRENCY_CHOICES,
-                                              default=settings.DEFAULT_CURRENCY,
-                                              source='amount.currency')
+    amount_currency = serializers.CharField(source='amount.currency', read_only=True)
     account_from = SimpleAccountSerializer(read_only=True)
     account_to = SimpleAccountSerializer(read_only=True)
     account_from_id = serializers.PrimaryKeyRelatedField(
@@ -64,27 +61,38 @@ class TransactionSerializer(serializers.ModelSerializer):
                   'account_from_id', 'account_to_id', 'description', 'category', 'is_completed',
                   'counterparty_name', 'item_type', 'category_name']
 
-    @atomic
-    def validate(self, attrs):
+    def _validate_accounts(self, attrs):
         user = self.context['request'].user
 
-        amount = Money(**attrs['amount'])
-        attrs['amount'] = amount
+        if attrs['item_type'] == 'purchase':
+            required_accounts = ['account_from']
+        elif attrs['item_type'] == 'income':
+            required_accounts = ['account_to']
+        else:
+            required_accounts = ['account_from', 'account_to']
+
+        for required_account in required_accounts:
+            if not attrs.get(required_account):
+                raise serializers.ValidationError({
+                    f'{required_account}_id': "Це поле обов'язкове",
+                })
 
         if attrs['item_type'] == 'purchase':
-            attrs['account_to'] = user.spending_balance
-        elif not attrs.get('account_to'):
-            raise serializers.ValidationError({
-                'account_to_id': "Це поле обв'язкове",
-            })
+            currency = attrs['account_from'].balance.currency
+            attrs['account_to'] = user.get_spending_balance(currency)
+        elif attrs['item_type'] == 'income':
+            currency = attrs['account_to'].balance_currency
+            attrs['account_from'] = user.get_income_balance(currency)
+        else:
+            currency = attrs['account_from'].balance_currency
+            if currency != attrs['account_to'].balance_currency:
+                raise serializers.ValidationError(
+                    'Валюта операції повинна співпадати з валютою обох рахунків')
 
-        if attrs['item_type'] == 'income':
-            attrs['account_from'] = user.income_balance
-        elif not attrs.get('account_from'):
-            raise serializers.ValidationError({
-                'account_from_id': "Це поле обв'язкове",
-            })
+        amount = Money(amount=attrs['amount']['amount'], currency=currency)
+        attrs['amount'] = amount
 
+    def _validate_balance(self, attrs):
         current_balance = attrs['account_from'].balance
         try:
             attrs['account_from'].balance = current_balance - attrs['amount']
@@ -96,20 +104,30 @@ class TransactionSerializer(serializers.ModelSerializer):
         finally:
             attrs['account_from'].balance = current_balance
 
+    def _validate_counterparty(self, attrs):
+        user = self.context['request'].user
+
         counterparty_name = attrs.pop('counterparty_name', None)
         if attrs['item_type'] in ['purchase', 'income']:
             if not counterparty_name:
                 raise serializers.ValidationError({
-                    'counterparty_name': "Це поле обв'язкове",
+                    'counterparty_name': "Це поле обов'язкове",
                 })
             counterparty, _ = Counterparty.objects.get_or_create(name=counterparty_name, user=user)
             attrs['counterparty'] = counterparty
 
+    def _validate_category(self, attrs):
         category_name = attrs.pop('category_name')
         category = (TransactionCategory.objects.filter(name=category_name).first() or
                     TransactionCategory.objects.create(name=category_name))
         attrs['category'] = category
 
+    @atomic
+    def validate(self, attrs):
+        self._validate_accounts(attrs)
+        self._validate_balance(attrs)
+        self._validate_counterparty(attrs)
+        self._validate_category(attrs)
         return attrs
 
     def create(self, validated_data):
