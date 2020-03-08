@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 import dj_database_url
 import dotenv
@@ -41,8 +42,9 @@ INSTALLED_APPS = [
     # third party
     'corsheaders',
     'djmoney',
-    'graphene_django',
+    'rest_framework',
     'polymorphic',
+    'django_filters',
 
     # local
     'apps.accounts',
@@ -116,7 +118,6 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'users.User'
 
 AUTHENTICATION_BACKENDS = [
-    'graphql_jwt.backends.JSONWebTokenBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -124,7 +125,7 @@ AUTHENTICATION_BACKENDS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'uk-ua'
 
 TIME_ZONE = 'Europe/Kiev'
 
@@ -146,6 +147,11 @@ STATICFILES_DIRS = [
 
 
 DEFAULT_CURRENCY = 'UAH'
+CURRENCY_CHOICES = [
+    ('UAH', 'UAH'),
+    ('USD', 'USD'),
+    ('EUR', 'EUR'),
+]
 
 if not HEROKU:
     LOGGING = {
@@ -172,15 +178,38 @@ if not HEROKU:
         },
     }
 
-
-GRAPHENE = {
-    'SCHEMA': 'apps.schema.schema',
-    'SCHEMA_OUTPUT': 'static/schema.json',
-    'SCHEMA_INDENT': 2,
-    'CAMELCASE_ERRORS': True,
-    'MIDDLEWARE': [
-        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'djangorestframework_camel_case.render.CamelCaseJSONRenderer',
+        'djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'djangorestframework_camel_case.parser.CamelCaseFormParser',
+        'djangorestframework_camel_case.parser.CamelCaseMultiPartParser',
+        'djangorestframework_camel_case.parser.CamelCaseJSONParser',
+    ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.OrderingFilter',
+        'rest_framework.filters.SearchFilter'
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'apps.common.api.pagination.PaginationWithCountHeader',
+    'PAGE_SIZE': 20,
+}
+
+SIMPLE_JWT = {
+    # for simplicity, adjust later
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=3),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
+    'AUTH_HEADER_TYPES': ('JWT',),
 }
 
 API_URL = dotenv.get('API_URL', default='http://localhost:8000')
@@ -195,7 +224,7 @@ else:
         r'^(https?://)?(\w+\.)?smooothie-web(-staging)?\.herokuapp\.com$',
     ]
 
-CORS_URLS_REGEX = r'^/graphql$'
+CORS_URLS_REGEX = r'^/api/.*$'
 
 CSRF_TRUSTED_ORIGINS = [UI_URL.strip('http://').strip('https://')]
 
