@@ -31,7 +31,11 @@ class Organization(Counterparty):
 
 
 class Bank(Organization):
-    pass
+    API_CHOICES = [
+        ('MonobankAPI', 'Monobank API'),
+    ]
+
+    api_class = models.CharField(choices=API_CHOICES, null=True, blank=True, max_length=50)
 
 
 class Shop(Organization):

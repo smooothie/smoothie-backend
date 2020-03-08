@@ -4,12 +4,17 @@ from django.db.transaction import atomic
 from djmoney.money import Money
 from rest_framework import serializers
 
-from apps.accounts.models import Account, CashAccount, CounterpartyAccount
+from apps.accounts.models import (Account, CashAccount, CounterpartyAccount, CreditBankAccount,
+                                  DebitBankAccount, Deposit, Loan)
 from apps.counterparties.models import Counterparty
 
 ACCOUNT_CLASSES = {
     'cashaccount': CashAccount,
     'counterpartyaccount': CounterpartyAccount,
+    'debitbankaccount': DebitBankAccount,
+    'creditbankaccount': CreditBankAccount,
+    'deposit': Deposit,
+    'loan': Loan,
 }
 
 
@@ -21,8 +26,12 @@ class SimpleAccountSerializer(serializers.ModelSerializer):
 
 class AccountSerializer(serializers.ModelSerializer):
     item_type = serializers.ChoiceField(choices=[
-        ('cashaccount', 'cashaccount'),
-        ('counterpartyaccount', 'counterpartyaccount'),
+        ('cashaccount', 'Cash Account'),
+        ('counterpartyaccount', 'Counterparty Account'),
+        ('debitbankaccount', 'Debit Bank Account'),
+        ('creditbankaccount', 'Credit Bank Account'),
+        ('deposit', 'Deposit'),
+        ('loan', 'Loan'),
     ])
     balance = serializers.FloatField(source='balance.amount', default=0)
     balance_currency = serializers.ChoiceField(choices=settings.CURRENCY_CHOICES,
