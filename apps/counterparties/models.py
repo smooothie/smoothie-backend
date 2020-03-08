@@ -13,7 +13,8 @@ class Counterparty(PolyModel):
     class Meta:
         verbose_name_plural = _('counterparties')
         constraints = [
-            models.UniqueConstraint(fields=['user', 'name'], name='counterparty_unique_user_name'),
+            models.UniqueConstraint(fields=['user', 'name', 'item_type'],
+                                    name='counterparty_unique_user_name'),
         ]
 
     def __str__(self):
