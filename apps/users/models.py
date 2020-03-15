@@ -7,7 +7,7 @@ from djmoney.money import Money
 
 class User(AbstractUser):
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username']
 
     email = CIEmailField(
         verbose_name=_('Email'),
@@ -17,6 +17,11 @@ class User(AbstractUser):
             'unique': _('That email address is already taken.')
         }
     )
+
+    def save(self, *args, **kwargs):
+        if not self.username:
+            self.username = self.email
+        return super().save(*args, **kwargs)
 
     def get_income_balance(self, currency):
         from apps.accounts.models import IncomeBalance

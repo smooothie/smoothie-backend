@@ -27,8 +27,7 @@ class AccountSerializer(serializers.ModelSerializer):
     item_type = serializers.ChoiceField(choices=[
         ('cashaccount', 'Cash Account'),
         ('counterpartyaccount', 'Counterparty Account'),
-        ('debitbankaccount', 'Debit Bank Account'),
-        ('creditbankaccount', 'Credit Bank Account'),
+        ('bankaccount', 'Bank Account'),
         ('deposit', 'Deposit'),
         ('loan', 'Loan'),
     ])
@@ -41,11 +40,12 @@ class AccountSerializer(serializers.ModelSerializer):
     bank_name = serializers.CharField(write_only=True, required=False, default=None,
                                       allow_null=True, allow_blank=True)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    credit_limit = serializers.FloatField()
 
     class Meta:
         model = Account
         fields = ['id', 'item_type', 'name', 'balance', 'balance_currency', 'counterparty_name',
-                  'bank_name', 'user']
+                  'bank_name', 'user', 'credit_limit']
 
     @atomic
     def validate(self, attrs):
@@ -61,7 +61,7 @@ class AccountSerializer(serializers.ModelSerializer):
             attrs['counterparty'] = counterparty
 
         bank_name = attrs.pop('bank_name', None)
-        if attrs['item_type'] in ['debitbankaccount', 'creditbankaccount', 'deposit', 'loan']:
+        if attrs['item_type'] in ['bankaccount', 'deposit', 'loan']:
             if not bank_name:
                 raise serializers.ValidationError({
                     'bank_name': "Це поле обов'язкове",
