@@ -5,6 +5,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 from apps.accounts.api.views import AccountViewSet
+from apps.bank_apis.monobank_api.views import CreateMonobankAccountsView, ListMonobankAccountsView
 from apps.counterparties.api.views import CounterpartyAutocompleteViewSet
 from apps.transactions.api.views import CategoryAutocompleteViewSet, TransactionViewSet
 
@@ -20,5 +21,9 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/monobank/accounts/import/', CreateMonobankAccountsView.as_view(),
+         name='monobank_accounts_import'),
+    path('api/monobank/accounts/', ListMonobankAccountsView.as_view(),
+         name='monobank_accounts_list'),
     path('api/', include(router.urls))
 ]
