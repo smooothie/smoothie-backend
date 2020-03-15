@@ -21,6 +21,8 @@ class Account(PolyModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='accounts')
     name = models.CharField(max_length=128)
     balance = MoneyField(max_digits=14, decimal_places=2, default=0, default_currency='UAH')
+    credit_limit = models.DecimalField(max_digits=14, decimal_places=2, default=0,
+                                       validators=[MinValueValidator(0)])
 
     objects = AccountQuerySet.as_manager()
 
@@ -36,8 +38,12 @@ class Account(PolyModel):
                 condition=models.Q(item_type__in=['spendingbalance', 'incomebalance'])
             ),
             models.CheckConstraint(
-                check=(models.Q(balance__gte=0) |
-                       ~models.Q(item_type__in=['cashaccount', 'debitbankaccount', 'deposit'])),
+                check=(models.Q(balance__gte=0 - models.F('credit_limit'))),
+                name='check_balance'
+            ),
+            models.CheckConstraint(
+                check=(models.Q(credit_limit=0) |
+                       ~models.Q(item_type__in=['cashaccount', 'deposit'])),
                 name='positive_balance_debit'
             )
         ]
@@ -45,12 +51,32 @@ class Account(PolyModel):
     def __str__(self):
         return f'{self.name}, {self.user.username}'
 
+    def clean(self):
+        balance_validator = MinMoneyValidator(0 - self.credit_limit)
+        try:
+            balance_validator(self.balance)
+        except ValidationError as e:
+            raise ValidationError({'balance': e})
 
-class SpendingBalance(Account):
+
+class UnlimitedCreditAccount(models.Model):
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        self.credit_limit = 999999999
+        return super().save(*args, **kwargs)
+
+    def clean(self):
+        self.credit_limit = 999999999
+        super().clean()
+
+
+class SpendingBalance(UnlimitedCreditAccount, Account):
     pass
 
 
-class IncomeBalance(Account):
+class IncomeBalance(UnlimitedCreditAccount, Account):
     pass
 
 
@@ -59,23 +85,23 @@ class DebitAccount(Account):
         abstract = True
 
     def clean(self):
-        balance_validator = MinMoneyValidator(0)
-        try:
-            balance_validator(self.balance)
-        except ValidationError as e:
-            raise ValidationError({'balance': e})
+        if self.credit_limit > 0:
+            raise ValidationError({
+                'credit_limit': 'Кредитний ліміт дебетового рахунку не може бути додатним',
+            })
+        super().clean()
 
 
 class CashAccount(DebitAccount):
     pass
 
 
-class CounterpartyAccount(Account):
+class CounterpartyAccount(UnlimitedCreditAccount, Account):
     counterparty = models.ForeignKey(Counterparty, on_delete=models.PROTECT,
                                      related_name='accounts')
 
 
-class BankAccount(Account):
+class BankAccountBase(Account):
     bank = models.ForeignKey(Bank, on_delete=models.PROTECT)
     api_account_id = models.CharField(null=True, blank=True, unique=True, max_length=50)
 
@@ -83,11 +109,7 @@ class BankAccount(Account):
         abstract = True
 
 
-class DebitBankAccount(DebitAccount, BankAccount):
-    pass
-
-
-class CreditBankAccount(BankAccount):
+class BankAccount(BankAccountBase):
     pass
 
 
@@ -119,9 +141,9 @@ class TermAgreementMixin(models.Model):
                                                max_length=40)
 
 
-class Deposit(TermAgreementMixin, DebitBankAccount):
+class Deposit(TermAgreementMixin, DebitAccount, BankAccountBase):
     pass
 
 
-class Loan(TermAgreementMixin, CreditBankAccount):
+class Loan(TermAgreementMixin, BankAccountBase):
     pass

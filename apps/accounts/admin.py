@@ -3,14 +3,14 @@ from django.contrib import admin
 from polymorphic.admin import (PolymorphicChildModelAdmin, PolymorphicChildModelFilter,
                                PolymorphicParentModelAdmin)
 
-from apps.accounts.models import (Account, CashAccount, CounterpartyAccount, CreditBankAccount,
-                                  DebitBankAccount, Deposit, IncomeBalance, Loan, SpendingBalance)
+from apps.accounts.models import (Account, BankAccount, CashAccount, CounterpartyAccount, Deposit,
+                                  IncomeBalance, Loan, SpendingBalance)
 
 
 @admin.register(Account)
 class AccountAdmin(PolymorphicParentModelAdmin):
     base_model = Account
-    child_models = [CashAccount, CounterpartyAccount, DebitBankAccount, CreditBankAccount,
+    child_models = [CashAccount, CounterpartyAccount, BankAccount,
                     Deposit, Loan, IncomeBalance, SpendingBalance]
     list_filter = [PolymorphicChildModelFilter]
 
@@ -39,15 +39,9 @@ class CounterpartyAccountAdmin(PolymorphicChildModelAdmin):
     show_in_index = True
 
 
-@admin.register(DebitBankAccount)
-class DebitBankAccountAdmin(PolymorphicChildModelAdmin):
-    base_model = DebitBankAccount
-    show_in_index = True
-
-
-@admin.register(CreditBankAccount)
-class CreditBankAccountAdmin(PolymorphicChildModelAdmin):
-    base_model = CreditBankAccount
+@admin.register(BankAccount)
+class BankAccountAdmin(PolymorphicChildModelAdmin):
+    base_model = BankAccount
     show_in_index = True
 
 

@@ -4,15 +4,14 @@ from django.db.transaction import atomic
 from djmoney.money import Money
 from rest_framework import serializers
 
-from apps.accounts.models import (Account, CashAccount, CounterpartyAccount, CreditBankAccount,
-                                  DebitBankAccount, Deposit, Loan)
+from apps.accounts.models import (Account, BankAccount, CashAccount, CounterpartyAccount, Deposit,
+                                  Loan)
 from apps.counterparties.models import Bank, Counterparty
 
 ACCOUNT_CLASSES = {
     'cashaccount': CashAccount,
     'counterpartyaccount': CounterpartyAccount,
-    'debitbankaccount': DebitBankAccount,
-    'creditbankaccount': CreditBankAccount,
+    'bankaccount': BankAccount,
     'deposit': Deposit,
     'loan': Loan,
 }

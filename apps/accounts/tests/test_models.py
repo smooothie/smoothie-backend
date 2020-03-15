@@ -6,7 +6,8 @@ from parameterized import parameterized
 
 from apps.accounts.models import IncomeBalance, SpendingBalance
 from apps.users.tests.factories import UserFactory
-from .factories import CashAccountFactory, IncomeBalanceFactory, SpendingBalanceFactory
+from .factories import (BankAccountFactory, CashAccountFactory, IncomeBalanceFactory,
+                        SpendingBalanceFactory)
 
 
 class AccountTestCase(TestCase):
@@ -67,3 +68,17 @@ class AccountTestCase(TestCase):
 
         with self.assertRaises(IntegrityError):
             cash_account.save()
+
+    def test_checks_balance(self):
+        account = BankAccountFactory(credit_limit=500)
+        account.balance = -300
+        self.assertIsNone(account.full_clean())
+        account.save()
+        self.assertEqual(account.balance.amount, -300)
+
+        account.balance = -550
+        with self.assertRaises(ValidationError):
+            account.full_clean()
+
+        with self.assertRaises(IntegrityError):
+            account.save()

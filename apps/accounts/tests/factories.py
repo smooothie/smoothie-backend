@@ -1,6 +1,8 @@
 import factory
 
-from apps.accounts.models import CashAccount, IncomeBalance, SpendingBalance
+from apps.accounts.models import (BankAccount, CashAccount, CounterpartyAccount, IncomeBalance,
+                                  SpendingBalance)
+from apps.counterparties.tests.factories import BankFactory, CounterpartyFactory
 from apps.users.tests.factories import UserFactory
 
 
@@ -27,3 +29,17 @@ class IncomeBalanceFactory(AccountFactory):
 class CashAccountFactory(AccountFactory):
     class Meta:
         model = CashAccount
+
+
+class CounterpartyAccountFactory(AccountFactory):
+    counterparty = factory.SubFactory(CounterpartyFactory)
+
+    class Meta:
+        model = CounterpartyAccount
+
+
+class BankAccountFactory(AccountFactory):
+    bank = factory.SubFactory(BankFactory)
+
+    class Meta:
+        model = BankAccount
