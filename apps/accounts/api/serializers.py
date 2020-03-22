@@ -41,11 +41,15 @@ class AccountSerializer(serializers.ModelSerializer):
                                       allow_null=True, allow_blank=True)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     credit_limit = serializers.FloatField()
+    api_account_id = serializers.SerializerMethodField()
 
     class Meta:
         model = Account
         fields = ['id', 'item_type', 'name', 'balance', 'balance_currency', 'counterparty_name',
-                  'bank_name', 'user', 'credit_limit']
+                  'bank_name', 'user', 'credit_limit', 'api_account_id']
+
+    def get_api_account_id(self, obj):
+        return getattr(obj, 'api_account_id', None)
 
     @atomic
     def validate(self, attrs):

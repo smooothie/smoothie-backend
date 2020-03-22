@@ -109,12 +109,9 @@ class TransactionSerializer(serializers.ModelSerializer):
 
         counterparty_name = attrs.pop('counterparty_name', None)
         if attrs['item_type'] in ['purchase', 'income']:
-            if not counterparty_name:
-                raise serializers.ValidationError({
-                    'counterparty_name': "Це поле обов'язкове",
-                })
-            counterparty, _ = Counterparty.objects.get_or_create(name=counterparty_name, user=user)
-            attrs['counterparty'] = counterparty
+            if counterparty_name:
+                counterparty, _ = Counterparty.objects.get_or_create(name=counterparty_name, user=user)
+                attrs['counterparty'] = counterparty
 
     def _validate_category(self, attrs):
         category_name = attrs.pop('category_name')
