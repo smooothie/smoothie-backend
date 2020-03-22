@@ -2,7 +2,8 @@ from rest_framework.generics import CreateAPIView
 from rest_framework_bulk import BulkCreateAPIView
 
 from apps.accounts.models import Account
-from .serializers import AccountCreateSerializer, AccountsSerializer
+from apps.transactions.models import Transaction
+from .serializers import AccountCreateSerializer, AccountsSerializer, TransactionsSerializer
 
 
 class ListMonobankAccountsView(CreateAPIView):
@@ -19,3 +20,8 @@ class CreateMonobankAccountsView(BulkCreateAPIView):
 
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
+
+
+class CreateMonobankTransactionsView(CreateAPIView):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionsSerializer

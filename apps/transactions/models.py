@@ -48,6 +48,7 @@ class Transaction(PolyModel):
     category = models.ForeignKey(TransactionCategory, on_delete=models.PROTECT,
                                  related_name='transactions')
     is_completed = models.BooleanField(default=True)
+    api_id = models.CharField(null=True, blank=True, unique=True, max_length=50)
 
     objects = TransactionQuerySet.as_manager()
 
@@ -70,9 +71,10 @@ class Transaction(PolyModel):
     @atomic
     def save(self, *args, **kwargs):
         is_new = self.pk is None
+        update_balance = kwargs.pop('update_balance', True)
         res = super().save(*args, **kwargs)
         # TODO: handle updates as well
-        if is_new and self.is_completed:
+        if is_new and self.is_completed and update_balance:
             self.update_accounts_balances()
         return res
 

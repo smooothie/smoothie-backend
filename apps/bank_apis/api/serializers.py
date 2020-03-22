@@ -1,6 +1,9 @@
+from djangorestframework_camel_case.util import underscoreize
 from rest_framework import serializers
 
-from apps.accounts.api.serializers import AccountSerializer
+from apps.common.api.serializer_fields import TimestampField
+from apps.common.api.serializers import OtherRepresentationSerializer
+from apps.transactions.api.serializers import TransactionSerializer
 from .bank_api import BankAPI
 
 
@@ -28,7 +31,34 @@ class BaseAccountsSerializer(BankApiSerializer):
         return obj.get_accounts()
 
 
-class BaseAccountCreateSerializer(serializers.ModelSerializer):
-    def to_representation(self, instance):
-        super().to_representation(instance)
-        return AccountSerializer(instance=instance).to_representation(instance)
+class BaseTransactionsSerializer(OtherRepresentationSerializer, BankApiSerializer):
+    transaction_create_serializer_class = None
+    representation_serializer_class = TransactionSerializer
+
+    from_time = TimestampField(write_only=True)
+    to_time = TimestampField(write_only=True, required=False, allow_null=True)
+    account = serializers.CharField(write_only=True)
+
+    def create(self, validated_data):
+        assert issubclass(self.transaction_create_serializer_class, serializers.Serializer)
+        data_copy = validated_data.copy()
+        from_time = data_copy.pop('from_time')
+        to_time = data_copy.pop('to_time', None)
+        account = data_copy.pop('account')
+        bank_api = super().create(data_copy)
+        raw_transactions = bank_api.get_transactions(from_time, to_time, account)
+        create_serializer = self.transaction_create_serializer_class(
+            data=list(map(underscoreize, raw_transactions)),
+            many=True,
+            context={
+                'request': self.context['request'],
+                'account': self.validated_data['account'],
+            }
+        )
+        create_serializer.is_valid(raise_exception=True)
+        instances = create_serializer.save()
+        return instances
+
+    def update(self, instance, validated_data):
+        # TODO
+        return

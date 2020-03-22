@@ -78,7 +78,7 @@ class TransactionSerializer(serializers.ModelSerializer):
                 })
 
         if attrs['item_type'] == 'purchase':
-            currency = attrs['account_from'].balance.currency
+            currency = attrs['account_from'].balance_currency
             attrs['account_to'] = user.get_spending_balance(currency)
         elif attrs['item_type'] == 'income':
             currency = attrs['account_to'].balance_currency
