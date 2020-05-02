@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'apps.counterparties',
     'apps.transactions',
     'apps.users',
+    'apps.stats',
 ]
 
 if DEBUG:
@@ -152,11 +153,8 @@ STATICFILES_DIRS = [
 
 
 DEFAULT_CURRENCY = 'UAH'
-CURRENCY_CHOICES = [
-    ('UAH', 'UAH'),
-    ('USD', 'USD'),
-    ('EUR', 'EUR'),
-]
+CURRENCIES = ['UAH', 'USD', 'EUR']
+CURRENCY_CHOICES = [(curr, curr) for curr in CURRENCIES]
 
 if not HEROKU:
     LOGGING = {

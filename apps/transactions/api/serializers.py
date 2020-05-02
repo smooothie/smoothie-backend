@@ -110,7 +110,8 @@ class TransactionSerializer(serializers.ModelSerializer):
         counterparty_name = attrs.pop('counterparty_name', None)
         if attrs['item_type'] in ['purchase', 'income']:
             if counterparty_name:
-                counterparty, _ = Counterparty.objects.get_or_create(name=counterparty_name, user=user)
+                counterparty, _ = Counterparty.objects.get_or_create(name=counterparty_name,
+                                                                     user=user)
                 attrs['counterparty'] = counterparty
 
     def _validate_category(self, attrs):

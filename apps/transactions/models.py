@@ -36,6 +36,14 @@ class TransactionQuerySet(PolymorphicQuerySet):
             models.Q(account_to_id=account_id)
         )
 
+    def categories_structure(self):
+        return (
+            self.annotate(category_name=models.F('category__name'))
+                .values('category_name', 'amount_currency')
+                .annotate(total_amount=models.Sum('amount'))
+                .order_by('-total_amount')
+        )
+
 
 class Transaction(PolyModel):
     date = models.DateTimeField(default=timezone.now)
