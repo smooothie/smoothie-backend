@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from djangorestframework_camel_case.util import underscoreize
 from rest_framework import serializers
 
@@ -34,10 +36,21 @@ class BaseAccountsSerializer(BankApiSerializer):
 class BaseTransactionsSerializer(OtherRepresentationSerializer, BankApiSerializer):
     transaction_create_serializer_class = None
     representation_serializer_class = TransactionSerializer
+    max_time_interval = None
 
     from_time = TimestampField(write_only=True)
-    to_time = TimestampField(write_only=True, required=False, allow_null=True)
+    to_time = TimestampField(write_only=True, default=timezone.now)
     account = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        if (self.max_time_interval and
+                attrs['to_time'] - attrs['from_time'] > self.max_time_interval):
+            interval = timezone.timedelta(seconds=self.max_time_interval)
+            raise serializers.ValidationError(
+                f'Максимальний часовий інтервал становить {interval.days} днів'
+            )
+        return attrs
 
     def create(self, validated_data):
         assert issubclass(self.transaction_create_serializer_class, serializers.Serializer)

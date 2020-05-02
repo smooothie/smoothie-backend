@@ -10,6 +10,9 @@ from apps.transactions.models import Income, Purchase, Transaction, TransactionC
 from ..api.serializers import BaseAccountsSerializer, BaseTransactionsSerializer
 from .api import MonobankAPI
 
+# Monobank restriction: https://api.monobank.ua/docs/
+MAX_TIME = 2682000
+
 TRANSACTION_CLASSES = {
     'purchase': Purchase,
     'income': Income,
@@ -107,3 +110,4 @@ class TransactionCreateSerializer(serializers.ModelSerializer):
 class TransactionsSerializer(BaseRetrieveSerializer, BaseTransactionsSerializer):
     bank_api_class = MonobankAPI
     transaction_create_serializer_class = TransactionCreateSerializer
+    max_time_interval = MAX_TIME
