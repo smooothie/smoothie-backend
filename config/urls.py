@@ -9,7 +9,7 @@ from apps.bank_apis.monobank_api.views import (CreateMonobankAccountsView,
                                                CreateMonobankTransactionsView,
                                                ListMonobankAccountsView)
 from apps.counterparties.api.views import CounterpartyAutocompleteViewSet
-from apps.stats.api.views import StructureViewSet
+from apps.stats.api.views import DynamicsViewSet, StructureViewSet
 from apps.transactions.api.views import CategoryAutocompleteViewSet, TransactionViewSet
 
 router = DefaultRouter()
@@ -18,6 +18,7 @@ router.register(r'transactions', TransactionViewSet)
 router.register(r'counterparties/autocomplete', CounterpartyAutocompleteViewSet)
 router.register(r'categories/autocomplete', CategoryAutocompleteViewSet)
 router.register(r'stats/structure/(?P<account_type>(income|spending))', StructureViewSet)
+router.register(r'stats/dynamics/(?P<account_type>(income|spending))', DynamicsViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

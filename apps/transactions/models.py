@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
+from django.db.models.functions import Trunc
 from django.db.transaction import atomic
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -42,6 +43,14 @@ class TransactionQuerySet(PolymorphicQuerySet):
                 .values('category_name', 'amount_currency')
                 .annotate(total_amount=models.Sum('amount'))
                 .order_by('-total_amount')
+        )
+
+    def dynamics(self, period='month'):
+        return (
+            self.annotate(period=Trunc('date', period))
+                .values('period', 'amount_currency')
+                .annotate(total_amount=models.Sum('amount'))
+                .order_by('amount_currency', 'period')
         )
 
 

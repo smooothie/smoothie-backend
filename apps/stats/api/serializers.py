@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 
-class CategoryAmountSerializer(serializers.Serializer):
+class StructureSerializer(serializers.Serializer):
     category_name = serializers.CharField(read_only=True)
     total_amount = serializers.FloatField(read_only=True)
     currency = serializers.CharField(source='amount_currency', read_only=True)
@@ -11,3 +11,9 @@ class CategoryAmountSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         return
+
+
+class DynamicsSerializer(serializers.Serializer):
+    period = serializers.DateTimeField(read_only=True)
+    total_amount = serializers.FloatField(read_only=True)
+    currency = serializers.CharField(source='amount_currency', read_only=True)
